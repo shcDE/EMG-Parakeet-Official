@@ -1,0 +1,194 @@
+{
+  "root": "/home/shcheong24/Desktop/experiment_shc/first_author/speech_synthesis_emg/jbsu2-osfstorage-archive/EMG-VCTK",
+  "total_bytes": 5733665896,
+  "counts": {
+    ".npy": 10220,
+    ".json": 10220,
+    ".wav": 10220,
+    ".txt": 10220,
+    ".textgrid": 3559
+  },
+  "samples": {
+    ".json": [
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/baseline/SPK002_EMG-VCTK-SESS001_baseline_baseline.json",
+        "info": {
+          "head": [
+            "{",
+            "    \"utterance_id\": \"SPK002_EMG-VCTK-SESS001_baseline_baseline\",",
+            "    \"speaker_id\": \"SPK002\",",
+            "    \"session_id\": \"SPK002_EMG-VCTK-SESS001\",",
+            "    \"speaking_mode\": \"baseline\",",
+            "    \"emg_sr\": 800,"
+          ]
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_004_audible.json",
+        "info": {
+          "head": [
+            "{",
+            "    \"utterance_id\": \"SPK002_EMG-VCTK-SESS001_004_audible\",",
+            "    \"speaker_id\": \"SPK002\",",
+            "    \"session_id\": \"SPK002_EMG-VCTK-SESS001\",",
+            "    \"speaking_mode\": \"audible\",",
+            "    \"emg_sr\": 800,"
+          ]
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_005_silent.json",
+        "info": {
+          "head": [
+            "{",
+            "    \"utterance_id\": \"SPK002_EMG-VCTK-SESS001_005_silent\",",
+            "    \"speaker_id\": \"SPK002\",",
+            "    \"session_id\": \"SPK002_EMG-VCTK-SESS001\",",
+            "    \"speaking_mode\": \"silent\",",
+            "    \"emg_sr\": 800,"
+          ]
+        }
+      }
+    ],
+    ".npy": [
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/baseline/SPK002_EMG-VCTK-SESS001_baseline_baseline_emg.npy",
+        "info": {
+          "type": "npy",
+          "shape": [
+            28781,
+            8
+          ],
+          "dtype": "float32",
+          "min": -21.571199417114258,
+          "max": 14.893199920654297
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_004_audible_emg.npy",
+        "info": {
+          "type": "npy",
+          "shape": [
+            2731,
+            8
+          ],
+          "dtype": "float32",
+          "min": -38.379600524902344,
+          "max": 51.937198638916016
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_005_silent_emg.npy",
+        "info": {
+          "type": "npy",
+          "shape": [
+            2938,
+            8
+          ],
+          "dtype": "float32",
+          "min": -49.492801666259766,
+          "max": 79.32959747314453
+        }
+      }
+    ],
+    ".textgrid": [
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_004_audible.TextGrid",
+        "info": {
+          "head": [
+            "File type = \"ooTextFile\"",
+            "Object class = \"TextGrid\"",
+            "",
+            "xmin = 0 ",
+            "xmax = 3.415329 ",
+            "tiers? <exists> "
+          ]
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_024_audible.TextGrid",
+        "info": {
+          "head": [
+            "File type = \"ooTextFile\"",
+            "Object class = \"TextGrid\"",
+            "",
+            "xmin = 0 ",
+            "xmax = 5.397166 ",
+            "tiers? <exists> "
+          ]
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_047_audible.TextGrid",
+        "info": {
+          "head": [
+            "File type = \"ooTextFile\"",
+            "Object class = \"TextGrid\"",
+            "",
+            "xmin = 0 ",
+            "xmax = 9.049932 ",
+            "tiers? <exists> "
+          ]
+        }
+      }
+    ],
+    ".txt": [
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/baseline/SPK002_EMG-VCTK-SESS001_baseline_baseline.txt",
+        "info": {
+          "head": [
+            "Please stay still for 30 seconds."
+          ]
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_004_audible.txt",
+        "info": {
+          "head": [
+            "Please call Stella."
+          ]
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_005_silent.txt",
+        "info": {
+          "head": [
+            "Please call Stella."
+          ]
+        }
+      }
+    ],
+    ".wav": [
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/baseline/SPK002_EMG-VCTK-SESS001_baseline_baseline.wav",
+        "info": {
+          "samplerate": 44100,
+          "channels": 1,
+          "frames": 1586824,
+          "duration_s": 35.982,
+          "subtype": "PCM_16"
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_004_audible.wav",
+        "info": {
+          "samplerate": 44100,
+          "channels": 1,
+          "frames": 150616,
+          "duration_s": 3.415,
+          "subtype": "PCM_16"
+        }
+      },
+      {
+        "path": "SPK002_EMG-VCTK-SESS001/test/SPK002_EMG-VCTK-SESS001_005_silent.wav",
+        "info": {
+          "samplerate": 44100,
+          "channels": 1,
+          "frames": 161982,
+          "duration_s": 3.673,
+          "subtype": "PCM_16"
+        }
+      }
+    ]
+  }
+}
