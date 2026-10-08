@@ -126,14 +126,11 @@ Complete DV training/evaluation before switching to EMG-VCTK. If running the two
 
 ## Pretrained checkpoints
 
-**Google Drive download:** The table below defines the intended release contents and extraction locations. Links will become available after the packages and their redistribution terms are verified.
-
-<!-- Maintainer: replace each PENDING entry with the actual Google Drive link. -->
+**Google Drive download:** The table below defines the intended release contents and extraction locations.
 
 | Package | Google Drive | Required checkpoint paths after extraction | Evaluation modes |
 | --- | --- | --- | --- |
-| Digital Voicing, 8/64 | PENDING | `output_stage1_dv/model.pt`, `output_parakeet_dv_8_64/parakeet_asr_best.pt` | Silent and voiced |
-| EMG-VCTK transfer, 8/64 | PENDING | `output_stage1_emg_vctk_ft/model.pt`, `output_parakeet_emg_vctk_8_64_ft/parakeet_asr_best.pt` | Silent and voiced |
+| Digital Voicing and EMG-VCTK transfer, 8/64 each | [Drive for Checkpoints](https://drive.google.com/drive/folders/1yI5_JcUXf_LSMvfQceIpRwVSvYVOGZGK?usp=sharing) | `output_stage1_dv/model.pt`, `output_parakeet_dv_8_64/parakeet_asr_best.pt`, `output_stage1_emg_vctk_ft/model.pt`, `output_parakeet_emg_vctk_8_64_ft/parakeet_asr_best.pt`| Silent and voiced |
 
 Each corpus uses the **same stage-1/ASR checkpoint pair** for silent and voiced evaluation. The evaluation script selects the recording mode. Training is unnecessary when the matching released checkpoints and supporting files are available.
 
