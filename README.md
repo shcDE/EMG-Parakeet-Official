@@ -18,19 +18,26 @@ The implementation supports **Digital Voicing (DV)** and **EMG-VCTK**, with sepa
 
 ## Getting started
 
+Use Conda to create the Python environment. Install Conda before running the setup commands below.
+
 ```bash
 git clone https://github.com/shcDE/EMG-Parakeet-Official.git
 cd EMG-Parakeet-Official
-python3.11 -m venv .venv
-source .venv/bin/activate
+
+conda create -n emg-parakeet python=3.11 pip -y
+conda activate emg-parakeet
 python -m pip install --upgrade pip
 ```
+
+Run all commands below from the repository root in Bash. The dataset argument arrays, such as `DV_ARGS` and `VCTK_ARGS`, require Bash. Keep the Conda environment active and define the relevant array in the same shell before running training or evaluation.
 
 Install the Python dependencies in one command:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
+
+The requirements file is based on the author's environment, with selected versions adjusted to satisfy NeMo's declared dependencies. It is not an exact reproduction of the original training environment.
 
 This recipe targets **Python 3.11 on Linux x86_64 with an NVIDIA GPU**, using the maintainer's **PyTorch 2.5.0 / torchaudio 2.5.0 / torchvision 0.20.0 CUDA 12.1 builds**. The official PyTorch wheel index is declared in the file. A compatible NVIDIA driver is required. Installing Python packages does not install a GPU driver. CPU-only, macOS and other CUDA builds require a separately matched PyTorch family rather than this CUDA-specific file. See [official PyTorch version instructions](https://pytorch.org/get-started/previous-versions/).
 
@@ -126,7 +133,7 @@ Complete DV training/evaluation before switching to EMG-VCTK. If running the two
 
 ## Pretrained checkpoints
 
-**Google Drive download:** The table below defines the intended release contents and extraction locations.
+**Google Drive download:** Download the matching checkpoints from the linked folder and arrange them at the paths below. These are the paths required by the commands in this README. The folder contents have not been independently verified for this documentation update.
 
 | Package | Google Drive | Required checkpoint paths after extraction | Evaluation modes |
 | --- | --- | --- | --- |
@@ -136,7 +143,18 @@ Each corpus uses the **same stage-1/ASR checkpoint pair** for silent and voiced 
 
 The EMG-VCTK terms prohibit publicly redistributing the complete dataset. The checkpoint packages must not bundle those recordings. Trained weights are not expressly addressed in the supplied terms. Provider clarification is still needed before declaring their distribution permitted.
 
-Each download should include the stage-1 checkpoint, ASR adaptation checkpoint, exact feature normalizer, configuration/environment metadata, checksums and applicable attribution/license notices. Keep the provided split identifiers and reproduce the manifest locally. Original EMG/audio recordings should be downloaded separately from the providers.
+Prepare the following files before evaluation:
+
+| Required asset | Location or preparation |
+| --- | --- |
+| Stage-1 and ASR adaptation checkpoints | Use the matching pair from the checkpoint paths listed above. |
+| Feature normalizer | Use `normalizers.pkl` for the documented DV and EMG-VCTK transfer recipes. Confirm that it is the exact normalizer used to train the downloaded checkpoints. |
+| DV split definition | Use the repository's `testset_largedev.json` for the documented DV protocol. |
+| EMG-VCTK manifest | Generate `emg_vctk_manifest_local.json` locally as described above. |
+| Dataset recordings, metadata and alignments | Obtain and prepare them through the original providers and dataset instructions above. |
+| Pretrained Parakeet backbone | The implementation loads `nvidia/parakeet-tdt-1.1b` separately, as described below. |
+
+Use the release's configuration, environment metadata, checksums and attribution/license notices when supplied. Their presence in the Drive folder is not confirmed here. Original EMG/audio recordings must be obtained separately from the providers.
 
 `parakeet_asr_best.pt` is **not a standalone 1.1B recognizer**. In the current implementation, `ParakeetMelASR.save()` saves the mel adapter, trainable NeMo parameters and metadata. The frozen backbone is loaded separately from `nvidia/parakeet-tdt-1.1b`. Keep that upstream model identifier and the architecture flags consistent with the checkpoint.
 
@@ -240,7 +258,7 @@ python train_parakeet.py "${DV_ARGS[@]}" \
   --output_directory output_parakeet_dv_8_64
 ```
 
-The code defaults to 80 stage-1 epochs, 10 warm-up epochs and 20 ASR-adaptation epochs. `--nojoint_finetune` keeps the transduction model fixed during ASR adaptation. The pretrained ASR backbone remains frozen while the mel adapter and encoder adapters are optimized. W&B logging is disabled in these examples. Omit `--nocreate_wandb_logger` to use it.
+The code defaults to 80 stage-1 epochs, 10 warm-up epochs and 20 ASR-adaptation epochs. `--nojoint_finetune` disables gradient updates to the transduction model parameters during ASR adaptation. Keeping its Dropout and BatchNorm behavior fixed also requires the training-mode correction described below. The pretrained ASR backbone remains frozen while the mel adapter and encoder adapters are optimized. W&B logging is disabled in these examples. Omit `--nocreate_wandb_logger` to use it.
 
 After training, run the DV silent and voiced evaluation commands above before changing imports.
 
