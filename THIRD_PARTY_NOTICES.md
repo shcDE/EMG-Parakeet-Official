@@ -62,12 +62,12 @@ SOFTWARE.
 
 The pretrained recognizer is obtained separately from [NVIDIA Parakeet-TDT-1.1B](https://huggingface.co/nvidia/parakeet-tdt-1.1b), jointly developed by NVIDIA NeMo and Suno.ai. Its model card specifies [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). EMG-Parakeet adds a mel interface and trains adaptation parameters for EMG-derived features. Preserve applicable model notices and identify these changes in any released adaptation package. The repository MIT license does not replace the upstream model license.
 
-NeMo and other installed dependencies retain their own licenses; see the packages' distributions and [NVIDIA NeMo](https://github.com/NVIDIA/NeMo).
+NeMo and other installed dependencies retain their own licenses. See the packages' distributions and [NVIDIA NeMo](https://github.com/NVIDIA/NeMo).
 
 ## Data and alignment resources
 
 - [Digital Voicing / Silent Speech EMG](https://zenodo.org/records/4064409), David Gaddy, 2020: CC BY 4.0 according to the [record metadata](https://zenodo.org/api/records/4064409).
-- [EMG-VCTK](https://osf.io/jbsu2/), Cognitive Systems Lab, University of Bremen: see the [full terms supplied by the maintainer](EMG-VCTK-TERMS.md). They specify non-commercial research use, prohibit re-identification and public redistribution of the complete dataset, allow internal sharing under the same terms, and allow limited excerpts in non-commercial research outputs with attribution. Cite Scheck et al. (2025). The supplied terms do not expressly address trained model/checkpoint distribution; seek provider clarification rather than presenting it as automatically permitted or prohibited.
+- [EMG-VCTK](https://osf.io/jbsu2/), Cognitive Systems Lab, University of Bremen: see the [full terms supplied by the maintainer](EMG-VCTK-TERMS.md). They specify non-commercial research use, prohibit re-identification and public redistribution of the complete dataset, allow internal sharing under the same terms, and allow limited excerpts in non-commercial research outputs with attribution. Cite Scheck et al. (2025). The supplied terms do not expressly address trained model/checkpoint distribution. Seek provider clarification rather than presenting it as automatically permitted or prohibited.
 - [Silent-speech alignments](https://github.com/dgaddy/silent_speech_alignments): inspect the original distribution terms before redistributing alignment files. This notice does not assign those files a new license.
 
 The repository currently includes dataset-related manifests, split files, normalizers and an alignment archive. Retain applicable attribution and review each resource's provenance and redistribution terms before release. A source-code MIT license alone does not establish permission for those assets. Do not treat an absent or unclear asset license as unrestricted permission.
