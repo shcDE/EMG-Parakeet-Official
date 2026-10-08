@@ -32,7 +32,7 @@ Install the Python dependencies in one command:
 python -m pip install -r requirements.txt
 ```
 
-This recipe targets **Python 3.11 on Linux x86_64 with an NVIDIA GPU**, using the maintainer's **PyTorch 2.5.0 / torchaudio 2.5.0 / torchvision 0.20.0 CUDA 12.1 builds**. The official PyTorch wheel index is declared in the file. A compatible NVIDIA driver is required; installing Python packages does not install a GPU driver. CPU-only, macOS and other CUDA builds require a separately matched PyTorch family rather than this CUDA-specific file. See [official PyTorch version instructions](https://pytorch.org/get-started/previous-versions/).
+This recipe targets **Python 3.11 on Linux x86_64 with an NVIDIA GPU**, using the maintainer's **PyTorch 2.5.0 / torchaudio 2.5.0 / torchvision 0.20.0 CUDA 12.1 builds**. The official PyTorch wheel index is declared in the file. A compatible NVIDIA driver is required. Installing Python packages does not install a GPU driver. CPU-only, macOS and other CUDA builds require a separately matched PyTorch family rather than this CUDA-specific file. See [official PyTorch version instructions](https://pytorch.org/get-started/previous-versions/).
 
 On Ubuntu, install system tools if they are not already available:
 
@@ -49,8 +49,8 @@ Download data from the original providers. Dataset files and their rights are se
 
 | Dataset | Official download | Reference | Terms |
 | --- | --- | --- | --- |
-| Digital Voicing / Silent Speech EMG | [Zenodo: 4064409](https://zenodo.org/records/4064409) | [Gaddy and Klein, EMNLP 2020](https://aclanthology.org/2020.emnlp-main.445/) | CC BY 4.0 in the record metadata; retain attribution and applicable notices. |
-| EMG-VCTK | [OSF: jbsu2](https://osf.io/jbsu2/) | [Scheck et al., Interspeech 2025](https://www.isca-archive.org/interspeech_2025/scheck25_interspeech.html) | Custom terms: non-commercial research use, no re-identification, no public redistribution of the complete dataset; limited attributed excerpts are allowed. See [full terms](EMG-VCTK-TERMS.md). |
+| Digital Voicing / Silent Speech EMG | [Zenodo: 4064409](https://zenodo.org/records/4064409) | [Gaddy and Klein, EMNLP 2020](https://aclanthology.org/2020.emnlp-main.445/) | CC BY 4.0 in the record metadata. Retain attribution and applicable notices. |
+| EMG-VCTK | [OSF: jbsu2](https://osf.io/jbsu2/) | [Scheck et al., Interspeech 2025](https://www.isca-archive.org/interspeech_2025/scheck25_interspeech.html) | Custom terms: non-commercial research use, no re-identification, no public redistribution of the complete dataset. Limited attributed excerpts are allowed. See [full terms](EMG-VCTK-TERMS.md). |
 
 ### Digital Voicing
 
@@ -95,9 +95,9 @@ python emg_vctk_index.py \
   --manifest_file emg_vctk_manifest_local.json
 ```
 
-Generate the manifest on your own machine: the checked-in manifest contains the author's absolute paths. The indexer enforces prompt-disjoint splits by default, moving overlapping prompts into the stricter split (`test`, then `dev`, then `train`). Keep this policy and the same dataset release for reproduction; inspect the reported counts.
+Generate the manifest on your own machine: the checked-in manifest contains the author's absolute paths. The indexer enforces prompt-disjoint splits by default, moving overlapping prompts into the stricter split (`test`, then `dev`, then `train`). Keep this policy and the same dataset release for reproduction. Inspect the reported counts.
 
-For the transfer recipe below, the DV normalizer is reused. Always use the exact normalizer paired with the published checkpoint; the presence of `normalizers_vctk.pkl` does not mean it can be substituted.
+For the transfer recipe below, the DV normalizer is reused. Always use the exact normalizer paired with the published checkpoint. The presence of `normalizers_vctk.pkl` does not mean it can be substituted.
 
 ```bash
 VCTK_ARGS=(
@@ -134,7 +134,7 @@ Complete DV training/evaluation before switching to EMG-VCTK. If running the two
 
 Each corpus uses the **same stage-1/ASR checkpoint pair** for silent and voiced evaluation. The evaluation script selects the recording mode. Training is unnecessary when the matching released checkpoints and supporting files are available.
 
-The EMG-VCTK terms prohibit publicly redistributing the complete dataset. The checkpoint packages must not bundle those recordings. Trained weights are not expressly addressed in the supplied terms; provider clarification is still needed before declaring their distribution permitted.
+The EMG-VCTK terms prohibit publicly redistributing the complete dataset. The checkpoint packages must not bundle those recordings. Trained weights are not expressly addressed in the supplied terms. Provider clarification is still needed before declaring their distribution permitted.
 
 Each download should include the stage-1 checkpoint, ASR adaptation checkpoint, exact feature normalizer, configuration/environment metadata, checksums and applicable attribution/license notices. Keep the provided split identifiers and reproduce the manifest locally. Original EMG/audio recordings should be downloaded separately from the providers.
 
@@ -182,7 +182,7 @@ python evaluate_asr.py "${VCTK_ARGS[@]}" \
 
 ### EMG-VCTK: voiced
 
-**Both `--dataset vctk` and `--novctk_eval_silent_only` are required.** The dataset flag defaults to `gaddy`; disabling silent-only filtering alone does not select EMG-VCTK. Keep `--vctk_eval_silent_only` out of the shared `VCTK_ARGS` array to avoid conflicting mode flags.
+**Both `--dataset vctk` and `--novctk_eval_silent_only` are required.** The dataset flag defaults to `gaddy`. Disabling silent-only filtering alone does not select EMG-VCTK. Keep `--vctk_eval_silent_only` out of the shared `VCTK_ARGS` array to avoid conflicting mode flags.
 
 ```bash
 python evaluate_asr_voiced.py "${VCTK_ARGS[@]}" \
@@ -202,9 +202,9 @@ python evaluate_asr_voiced.py "${VCTK_ARGS[@]}" \
 | `predictions.txt` | Normalized reference/hypothesis pairs (`REF:` / `HYP:`). |
 | WER / CER | Corpus-level word/character error rates, printed as percentages. |
 | `--dev` | Evaluate the development split instead of the default test split. |
-| `--skip_mel_metrics` | Skip DTW loss and phoneme accuracy; retain ASR evaluation. |
+| `--skip_mel_metrics` | Skip DTW loss and phoneme accuracy. Retain ASR evaluation. |
 | `--save_eval_mels` | Save mel tensors during evaluation. |
-| `--oracle` | Feed ground-truth mel features to the ASR backend; this is a diagnostic reference condition, not EMG recognition. |
+| `--oracle` | Feed ground-truth mel features to the ASR backend. This is a diagnostic reference condition, not EMG recognition. |
 
 ## Training
 
@@ -240,7 +240,7 @@ python train_parakeet.py "${DV_ARGS[@]}" \
   --output_directory output_parakeet_dv_8_64
 ```
 
-The code defaults to 80 stage-1 epochs, 10 warm-up epochs and 20 ASR-adaptation epochs. `--nojoint_finetune` keeps the transduction model fixed during ASR adaptation. The pretrained ASR backbone remains frozen while the mel adapter and encoder adapters are optimized. W&B logging is disabled in these examples; omit `--nocreate_wandb_logger` to use it.
+The code defaults to 80 stage-1 epochs, 10 warm-up epochs and 20 ASR-adaptation epochs. `--nojoint_finetune` keeps the transduction model fixed during ASR adaptation. The pretrained ASR backbone remains frozen while the mel adapter and encoder adapters are optimized. W&B logging is disabled in these examples. Omit `--nocreate_wandb_logger` to use it.
 
 After training, run the DV silent and voiced evaluation commands above before changing imports.
 
@@ -268,15 +268,15 @@ python train_parakeet.py "${VCTK_ARGS[@]}" \
   --output_directory output_parakeet_emg_vctk_8_64_ft
 ```
 
-**Do not run an additional `pretrain_mel_adapter.py` warm-up on EMG-VCTK for this recipe.** It starts from the DV ASR adaptation checkpoint directly. “Full FT” here refers to fine-tuning the stage-1 transduction model; it does not mean unfreezing all 1.1B Parakeet parameters.
+**Do not run an additional `pretrain_mel_adapter.py` warm-up on EMG-VCTK for this recipe.** It starts from the DV ASR adaptation checkpoint directly. “Full FT” here refers to fine-tuning the stage-1 transduction model. It does not mean unfreezing all 1.1B Parakeet parameters.
 
-The training sampler uses different length units for the two loaders. `train_parakeet.py` documents `--emg_batch_tokens 8000` as an EMG-VCTK-specific budget, versus the default 256000 appropriate to DV raw-sample lengths. The commands above preserve the supplied recipe; use the released run configuration for exact batch settings. If changing this budget for memory reasons, record the change.
+The training sampler uses different length units for the two loaders. `train_parakeet.py` documents `--emg_batch_tokens 8000` as an EMG-VCTK-specific budget, versus the default 256000 appropriate to DV raw-sample lengths. The commands above preserve the supplied recipe. Use the released run configuration for exact batch settings. If changing this budget for memory reasons, record the change.
 
 ### Reproducibility notes
 
 - Checkpoint, normalizer, model dimensions, dataset split and preprocessing options form one configuration. Do not mix files from different runs.
-- The default EMG-VCTK training loader includes audible and silent recordings; development/test loading is silent-only unless explicitly changed for voiced evaluation.
-- `parakeet_asr_best.pt` is saved on improved development WER. Stage-1 `model.pt` is overwritten each epoch in the current training loop; it is not automatically a best-development checkpoint.
+- The default EMG-VCTK training loader includes audible and silent recordings. Development/test loading is silent-only unless explicitly changed for voiced evaluation.
+- `parakeet_asr_best.pt` is saved on improved development WER. Stage-1 `model.pt` is overwritten each epoch in the current training loop. It is not automatically a best-development checkpoint.
 - Use a new output directory for a new run. Keep logs, exact flags, package versions and the source commit with released checkpoints.
 - Complete dataset evaluation and GPU training were not exercised as part of preparing this documentation. A clean-environment reproduction should be checked before declaring a release fully reproducible.
 
@@ -299,10 +299,10 @@ The training sampler uses different length units for the two loaders. `train_par
 
 Original project code is covered by the repository's [MIT license](LICENSE), subject to retained third-party notices. **The source-code license does not relicense datasets, pretrained models, alignment resources or other third-party material.** See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-- **Upstream code:** acknowledge [David Gaddy's silent-speech implementation](https://github.com/dgaddy/silent_speech) and retain its MIT copyright/license notice for copied or adapted code. The mel-processing helpers also follow [HiFi-GAN](https://github.com/jik876/hifi-gan); retain the relevant MIT notice. Acknowledging a paper does not replace retaining license notices.
+- **Upstream code:** acknowledge [David Gaddy's silent-speech implementation](https://github.com/dgaddy/silent_speech) and retain its MIT copyright/license notice for copied or adapted code. The mel-processing helpers also follow [HiFi-GAN](https://github.com/jik876/hifi-gan). Retain the relevant MIT notice. Acknowledging a paper does not replace retaining license notices.
 - **Digital Voicing data:** obtain it from the original Zenodo release and comply with CC BY 4.0 and any applicable resource-specific notices.
-- **EMG-VCTK data:** follow the [full terms](EMG-VCTK-TERMS.md): non-commercial research use, no re-identification, no public redistribution of the complete dataset, internal sharing under the same terms, and limited attributed excerpts in non-commercial research outputs. The supplied terms do not expressly address trained checkpoint distribution; neither permission nor a blanket prohibition on weights is asserted here. Clarify that point with the provider before publishing the EMG-VCTK checkpoint package.
-- **Parakeet-TDT-1.1B:** the upstream model card specifies [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Preserve applicable attribution, license links and change notices in redistributed model material; do not label NVIDIA weights as original MIT-licensed project code.
+- **EMG-VCTK data:** follow the [full terms](EMG-VCTK-TERMS.md): non-commercial research use, no re-identification, no public redistribution of the complete dataset, internal sharing under the same terms, and limited attributed excerpts in non-commercial research outputs. The supplied terms do not expressly address trained checkpoint distribution. Neither permission nor a blanket prohibition on weights is asserted here. Clarify that point with the provider before publishing the EMG-VCTK checkpoint package.
+- **Parakeet-TDT-1.1B:** the upstream model card specifies [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Preserve applicable attribution, license links and change notices in redistributed model material. Do not label NVIDIA weights as original MIT-licensed project code.
 - **Model downloads:** checkpoint packages have their own release notices. Verify the dataset/model terms and the actual package contents before publishing a Google Drive link. Hosting files outside GitHub does not change their licensing obligations.
 
 This implementation uses NVIDIA NeMo and credits the dataset and model authors. It is not endorsed by the upstream authors or organizations. Research evaluation does not establish clinical suitability.
