@@ -14,9 +14,7 @@
 
 EMG-Parakeet connects an sEMG-to-mel transduction model to the pretrained [NVIDIA Parakeet-TDT-1.1B](https://huggingface.co/nvidia/parakeet-tdt-1.1b) recognizer through a mel adapter and encoder adapters. Recognition uses predicted acoustic features directly, without waveform synthesis or external LLM correction.
 
-The implementation supports **Digital Voicing (DV)** and **EMG-VCTK**, with separate evaluation scripts for silent and vocalized EMG. The default encoder adapter configuration is **8/64**: bottleneck dimensions of 8 and 64 for the lower and upper encoder layers, respectively.
-
-> **Release status:** pretrained checkpoint download links will be added below. Until then, pretrained inference requires checkpoints obtained from the maintainer or produced by training. Dataset paths must be configured locally. A versioned installation recipe is provided in `requirements.txt`; its compatibility adjustments are documented below.
+The implementation supports **Digital Voicing (DV)** and **EMG-VCTK**, with separate evaluation scripts for silent and vocalized EMG. The default encoder adapter configuration is **8/64**: bottleneck dimensions of 8 and 64 for the lower and upper encoder layers.
 
 ## Getting started
 
@@ -45,34 +43,6 @@ sudo apt-get install -y build-essential python3-dev libsndfile1 ffmpeg sox
 
 For a non-default Python 3.11 installation, source builds may require its matching development headers. The system setup is separate from `pip`.
 
-### Environment provenance and compatibility
-
-The [original package inventory](docs/environment-observed.txt) records the maintainer's environment. It includes unrelated notebooks, databases and experimental model packages; these are not all direct requirements of this repository. `requirements.txt` pins the project's direct numerical/audio dependencies to that inventory and requests NeMo's ASR dependencies.
-
-The original inventory is not itself a clean-install lock. The following explicit changes satisfy NeMo 2.6.1's declared ASR/core requirements:
-
-| Package | Original inventory | Installation recipe | Reason |
-| --- | --- | --- | --- |
-| `jiwer` | 4.0.0 | 3.1.0 | NeMo ASR declares `>=3.1.0,<4.0.0`. |
-| `transformers` | 5.15.0 | 4.53.3 | NeMo declares `~=4.53.0`. |
-| `huggingface-hub` | 1.27.0 | `>=0.34.0,<1.0` | Use a compatible Transformers 4.x dependency range. |
-| `tokenizers` | 0.22.2 | `>=0.21.0,<0.22.0` | Match Transformers 4.53.x. |
-| `peft` | 0.20.0 | `>=0.16.0,<0.18.0` | Bound the PEFT stack to the Transformers 4.53 generation. |
-| `pytorch-lightning` | 2.6.1 | 2.4.0 | Align it with the listed `lightning==2.4.0` and NeMo's Lightning requirement. |
-
-`thop`'s listed version `0.1.1-2209072238` is written using its equivalent normalized form `0.1.1.post2209072238`. GPU runtime dependencies are resolved from the matched PyTorch wheels rather than copied individually from the original environment. `wandb`, `thop` and `noisereduce` are included for the corresponding optional repository features.
-
-**Use a new environment**, not the working training environment. This recipe is a compatibility-adjusted installation candidate, not a claim of identical numerical reproduction. The recipe resolved successfully to 191 packages for Python 3.11 / Linux x86_64 during documentation preparation. Dependency resolution does not prove successful imports, GPU execution or unchanged WER/CER. After installation, check:
-
-```bash
-python -m pip check
-python -c "import torch, torchaudio, torchvision; import nemo.collections.asr; import timm, librosa, jiwer; from textgrids import TextGrid; print('Imports OK; CUDA:', torch.cuda.is_available())"
-```
-
-Retain the original environment for reproducing existing results until these checks and checkpoint evaluation pass in the new one. See [NeMo installation guidance](https://github.com/NVIDIA/NeMo).
-
-Run all commands below from the repository root in **Bash**. CUDA is recommended; evaluation scripts select CUDA when available and otherwise use CPU. The first ASR run requires access to the upstream Parakeet model download unless it is already cached.
-
 ## Datasets
 
 Download data from the original providers. Dataset files and their rights are separate from this repository's source-code license.
@@ -80,7 +50,7 @@ Download data from the original providers. Dataset files and their rights are se
 | Dataset | Official download | Reference | Terms |
 | --- | --- | --- | --- |
 | Digital Voicing / Silent Speech EMG | [Zenodo: 4064409](https://zenodo.org/records/4064409) | [Gaddy and Klein, EMNLP 2020](https://aclanthology.org/2020.emnlp-main.445/) | CC BY 4.0 in the record metadata; retain attribution and applicable notices. |
-| EMG-VCTK | [OSF: jbsu2](https://osf.io/jbsu2/) | [Scheck et al., Interspeech 2025](https://www.isca-archive.org/interspeech_2025/scheck25_interspeech.html) | Custom terms: non-commercial research use, no re-identification, no public redistribution of the complete dataset; limited attributed excerpts are allowed. See [full terms](licenses/EMG-VCTK-TERMS.md). |
+| EMG-VCTK | [OSF: jbsu2](https://osf.io/jbsu2/) | [Scheck et al., Interspeech 2025](https://www.isca-archive.org/interspeech_2025/scheck25_interspeech.html) | Custom terms: non-commercial research use, no re-identification, no public redistribution of the complete dataset; limited attributed excerpts are allowed. See [full terms](EMG-VCTK-TERMS.md). |
 
 ### Digital Voicing
 
@@ -101,15 +71,15 @@ DV_ARGS=(
 )
 ```
 
-The default protocol uses `testset_largedev.json`; changing to `testset_origdev.json` changes the validation protocol. Keep the split used for the released checkpoints.
+The default protocol uses `testset_largedev.json`. Changing to `testset_origdev.json` changes the validation protocol. Keep the split used for the released checkpoints.
 
-Phoneme alignments are needed to reproduce stage-1 phoneme supervision and phoneme metrics. See the [upstream preparation instructions](https://github.com/dgaddy/silent_speech) and [alignment repository](https://github.com/dgaddy/silent_speech_alignments). Arrange the extracted files as `text_alignments/<session>/<session>_<index>_audio.TextGrid`. The current source also contains `text_alignments.tar.gz`; if using that archive, inspect its directory structure before extracting it into the repository root. Alignment files retain their original terms.
+Phoneme alignments are needed to reproduce stage-1 phoneme supervision and phoneme metrics. See the [upstream preparation instructions](https://github.com/dgaddy/silent_speech) and [alignment repository](https://github.com/dgaddy/silent_speech_alignments). Arrange the extracted files as `text_alignments/<session>/<session>_<index>_audio.TextGrid`. The current source also contains `text_alignments.tar.gz`. If using that archive, inspect its directory structure before extracting it into the repository root. Alignment files retain their original terms.
 
 Missing TextGrid files are replaced by silence labels in the current loader. Consequently, a run can finish without reproducing the intended phoneme supervision. For text-only evaluation, `--skip_mel_metrics` disables the DTW/phoneme metric pass, but does not change the dataset loader's file requirements.
 
 ### EMG-VCTK
 
-The [dataset terms](licenses/EMG-VCTK-TERMS.md), supplied by the maintainer, specify non-commercial research use and prohibit speaker re-identification. Do not publicly rehost the complete dataset on GitHub, Google Drive or another service. Internal sharing within a research group/institution is permitted under the same terms. Short audio clips or visualizations may be included in non-commercial research outputs with proper attribution to Scheck et al. (2025). This excerpt permission is not a blanket permission to redistribute arbitrary portions of the dataset.
+The [dataset terms](EMG-VCTK-TERMS.md), supplied by the maintainer, specify non-commercial research use and prohibit speaker re-identification. Do not publicly rehost the complete dataset on GitHub, Google Drive or another service. Internal sharing within a research group/institution is permitted under the same terms. Short audio clips or visualizations may be included in non-commercial research outputs with proper attribution to Scheck et al. (2025). This excerpt permission is not a blanket permission to redistribute arbitrary portions of the dataset.
 
 Download the EMG recording sessions and associated metadata/audio from the official OSF project. Keep the original session directories and their `train`, `valid` and `test` subdirectories under a common `EMG-VCTK` root. The indexer looks for matching JSON metadata, `_emg.npy` files, `.wav` recordings and optional TextGrid files. **`TTS-Targets.zip` is not the EMG recording dataset and is not used by the recipe below.**
 
@@ -148,7 +118,7 @@ The loader's defaults are 800 Hz raw EMG and eight channels. It excludes silent 
 | `train_parakeet.py` | `from read_emg import EMGDataset, SizeAwareSampler` | `from read_emg_vctk import EMGVCTKDataset as EMGDataset, SizeAwareSampler` |
 | `evaluate_asr.py` | `from read_emg import EMGDataset` | `from read_emg_vctk import EMGVCTKDataset as EMGDataset` |
 | `pretrain_mel_adapter.py` | `from read_emg import EMGDataset` | Not run in the EMG-VCTK transfer recipe. |
-| `evaluate_asr_voiced.py` | Keep both imports; pass `--dataset gaddy`. | Keep both imports; pass `--dataset vctk --novctk_eval_silent_only`. |
+| `evaluate_asr_voiced.py` | Keep both imports. Pass `--dataset gaddy`. | Keep both imports. Pass `--dataset vctk --novctk_eval_silent_only`. |
 
 For the first three scripts, enable **only one** of the two dataset import lines. Their EMG-VCTK alternatives are already present as comments. Switch all three consistently when moving between DV and EMG-VCTK: the evaluation and ASR-training scripts also import `transduction_model.py`.
 
@@ -156,16 +126,16 @@ Complete DV training/evaluation before switching to EMG-VCTK. If running the two
 
 ## Pretrained checkpoints
 
-**Google Drive download: pending.** The table below defines the intended release contents and extraction locations. Links will become available after the packages and their redistribution terms are verified.
+**Google Drive download:** The table below defines the intended release contents and extraction locations. Links will become available after the packages and their redistribution terms are verified.
 
 <!-- Maintainer: replace each PENDING entry with the actual Google Drive link. -->
 
 | Package | Google Drive | Required checkpoint paths after extraction | Evaluation modes |
 | --- | --- | --- | --- |
-| Digital Voicing, 8/64 | PENDING | `output_stage1_dv/model.pt`; `output_parakeet_dv_8_64/parakeet_asr_best.pt` | Silent and voiced |
-| EMG-VCTK transfer, 8/64 | PENDING | `output_stage1_emg_vctk_ft/model.pt`; `output_parakeet_emg_vctk_8_64_ft/parakeet_asr_best.pt` | Silent and voiced |
+| Digital Voicing, 8/64 | PENDING | `output_stage1_dv/model.pt`, `output_parakeet_dv_8_64/parakeet_asr_best.pt` | Silent and voiced |
+| EMG-VCTK transfer, 8/64 | PENDING | `output_stage1_emg_vctk_ft/model.pt`, `output_parakeet_emg_vctk_8_64_ft/parakeet_asr_best.pt` | Silent and voiced |
 
-Each corpus uses the **same stage-1/ASR checkpoint pair** for silent and voiced evaluation; the evaluation script selects the recording mode. Training is unnecessary when the matching released checkpoints and supporting files are available.
+Each corpus uses the **same stage-1/ASR checkpoint pair** for silent and voiced evaluation. The evaluation script selects the recording mode. Training is unnecessary when the matching released checkpoints and supporting files are available.
 
 The EMG-VCTK terms prohibit publicly redistributing the complete dataset. The checkpoint packages must not bundle those recordings. Trained weights are not expressly addressed in the supplied terms; provider clarification is still needed before declaring their distribution permitted.
 
@@ -334,7 +304,7 @@ Original project code is covered by the repository's [MIT license](LICENSE), sub
 
 - **Upstream code:** acknowledge [David Gaddy's silent-speech implementation](https://github.com/dgaddy/silent_speech) and retain its MIT copyright/license notice for copied or adapted code. The mel-processing helpers also follow [HiFi-GAN](https://github.com/jik876/hifi-gan); retain the relevant MIT notice. Acknowledging a paper does not replace retaining license notices.
 - **Digital Voicing data:** obtain it from the original Zenodo release and comply with CC BY 4.0 and any applicable resource-specific notices.
-- **EMG-VCTK data:** follow the [full terms](licenses/EMG-VCTK-TERMS.md): non-commercial research use, no re-identification, no public redistribution of the complete dataset, internal sharing under the same terms, and limited attributed excerpts in non-commercial research outputs. The supplied terms do not expressly address trained checkpoint distribution; neither permission nor a blanket prohibition on weights is asserted here. Clarify that point with the provider before publishing the EMG-VCTK checkpoint package.
+- **EMG-VCTK data:** follow the [full terms](EMG-VCTK-TERMS.md): non-commercial research use, no re-identification, no public redistribution of the complete dataset, internal sharing under the same terms, and limited attributed excerpts in non-commercial research outputs. The supplied terms do not expressly address trained checkpoint distribution; neither permission nor a blanket prohibition on weights is asserted here. Clarify that point with the provider before publishing the EMG-VCTK checkpoint package.
 - **Parakeet-TDT-1.1B:** the upstream model card specifies [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Preserve applicable attribution, license links and change notices in redistributed model material; do not label NVIDIA weights as original MIT-licensed project code.
 - **Model downloads:** checkpoint packages have their own release notices. Verify the dataset/model terms and the actual package contents before publishing a Google Drive link. Hosting files outside GitHub does not change their licensing obligations.
 
