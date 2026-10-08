@@ -2,7 +2,7 @@
 
 # EMG-Parakeet
 
-### Parameter-Efficient Adaptation of a Pretrained Neural Transducer for Surface Electromyography-to-Text Recognition
+### Parameter-Efficient Adaptation of a Pretrained Neural Transducer for Surface Electromyography-to-Text Recognition (in Preparation)
 
 **Silent and vocalized sEMG → acoustic features → text**
 
