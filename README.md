@@ -133,7 +133,7 @@ Complete DV training/evaluation before switching to EMG-VCTK. If running the two
 
 ## Pretrained checkpoints
 
-**Google Drive download:** Download the matching checkpoints from the linked folder and arrange them at the paths below. These are the paths required by the commands in this README. The folder contents have not been independently verified for this documentation update.
+**Google Drive download:** Download the matching checkpoints from the linked folder and arrange them at the paths below. These are the paths required by the commands in this README.
 
 | Package | Google Drive | Required checkpoint paths after extraction | Evaluation modes |
 | --- | --- | --- | --- |
@@ -141,7 +141,7 @@ Complete DV training/evaluation before switching to EMG-VCTK. If running the two
 
 Each corpus uses the **same stage-1/ASR checkpoint pair** for silent and voiced evaluation. The evaluation script selects the recording mode. Training is unnecessary when the matching released checkpoints and supporting files are available.
 
-The EMG-VCTK terms prohibit publicly redistributing the complete dataset. The checkpoint packages must not bundle those recordings. Trained weights are not expressly addressed in the supplied terms. Provider clarification is still needed before declaring their distribution permitted.
+The EMG-VCTK terms prohibit publicly redistributing the complete dataset. The checkpoint packages must not bundle those recordings. Trained weights are not expressly addressed in the supplied terms.
 
 Prepare the following files before evaluation:
 
