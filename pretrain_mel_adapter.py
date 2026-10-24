@@ -23,9 +23,9 @@ from parakeet_mel_asr import ParakeetMelASR
 from absl import flags
 FLAGS = flags.FLAGS
 
-flags.DEFINE_integer('pretrain_epochs', 10, 'Number of MelAdapter warmup epochs')
-flags.DEFINE_float('pretrain_lr', 1e-3, 'MelAdapter warmup learning rate')
-flags.DEFINE_integer('pretrain_batch_size', 8, 'Warmup batch size (utterances)')
+flags.DEFINE_integer('pretrain_epochs', 10, 'Number of MelAdapter fine-tuning epochs')
+flags.DEFINE_float('pretrain_lr', 1e-3, 'MelAdapter fine-tuning learning rate')
+flags.DEFINE_integer('pretrain_batch_size', 8, 'Fine-tuning batch size (utterances)')
 flags.DEFINE_integer('pretrain_max_utts', 0, 'Max utterances to use (0 = all)')
 flags.DEFINE_boolean('compare_stats_only', False,
                      'Skip training; only compare adapter output vs. real feature '
@@ -33,19 +33,19 @@ flags.DEFINE_boolean('compare_stats_only', False,
 flags.DEFINE_boolean('length_mse_only', False,
                      'Skip training; measure MSE bucketed by utterance length, then exit. '
                      'Used to determine whether interpolation (F.interpolate) is the '
-                     'bottleneck. Only meaningful with a warmed-up adapter supplied via '
+                     'bottleneck. Only meaningful with a fine-tuned adapter supplied via '
                      '--parakeet_checkpoint.')
 flags.DEFINE_integer('length_mse_max_utts', 1000,
                      'Max utterances used for the length-bucketed MSE measurement')
 flags.DEFINE_boolean('pretrain_use_target_length', True,
-                     'During warmup, use the real preprocessor output length instead of the '
+                     'During fine-tuning, use the real preprocessor output length instead of the '
                      'formula (mel_len*100/86.13). When the two lengths disagree, '
                      'align_target forcibly compresses the time axis and contaminates the '
                      'MSE. At inference there is no target, so the formula is used; for '
                      'normal utterances the ratio is around 0.99, so the mismatch is '
                      'negligible.')
 flags.DEFINE_float('pretrain_max_ratio_dev', 1.0,
-                   'Exclude utterances from warmup when the formula length / real length '
+                   'Exclude utterances from fine-tuning when the formula length / real length '
                    'ratio deviates from 1 by at least this much (suspected parallel-audio '
                    'mismatch). 0 disables the exclusion.')
 
@@ -252,7 +252,7 @@ def main():
                           FLAGS.length_mse_max_utts)
         return
 
-    # ---------------- Warmup training ----------------
+    # ---------------- Fine-tuning ----------------
     n = len(trainset) if FLAGS.pretrain_max_utts <= 0 else min(FLAGS.pretrain_max_utts,
                                                                len(trainset))
     indices = list(range(n))
@@ -336,9 +336,9 @@ def main():
     logging.info('Next: train_parakeet.py --parakeet_checkpoint %s',
                  os.path.join(FLAGS.output_directory, 'parakeet_asr_pretrained.pt'))
 
-    # ---------------- Distribution comparison after warmup ----------------
+    # ---------------- Distribution comparison after fine-tuning ----------------
     logging.info('=' * 78)
-    logging.info('Distribution after warmup')
+    logging.info('Distribution after fine-tuning')
     logging.info('=' * 78)
     asr.mel_adapter.eval()
     with torch.no_grad():
