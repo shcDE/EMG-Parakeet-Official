@@ -237,7 +237,7 @@ python transduction_model.py "${DV_ARGS[@]}" \
   --output_directory output_stage1_dv
 ```
 
-**Stage 2a — mel-adapter warm-up**
+**Stage 2a — mel-spectrogram adapter fine-tuning**
 
 ```bash
 python pretrain_mel_adapter.py "${DV_ARGS[@]}" \
@@ -258,7 +258,7 @@ python train_parakeet.py "${DV_ARGS[@]}" \
   --output_directory output_parakeet_dv_8_64
 ```
 
-The code defaults to 80 stage-1 epochs, 10 warm-up epochs and 20 ASR-adaptation epochs. `--nojoint_finetune` disables gradient updates to the transduction model parameters during ASR adaptation. Keeping its Dropout and BatchNorm behavior fixed also requires the training-mode correction described below. The pretrained ASR backbone remains frozen while the mel adapter and encoder adapters are optimized. W&B logging is disabled in these examples. Omit `--nocreate_wandb_logger` to use it.
+The code defaults to 80 stage-1 epochs, 10 fine-tuning epochs and 20 ASR-adaptation epochs. `--nojoint_finetune` disables gradient updates to the transduction model parameters during ASR adaptation. Keeping its Dropout and BatchNorm behavior fixed also requires the training-mode correction described below. The pretrained ASR backbone remains frozen while the mel adapter and encoder adapters are optimized. W&B logging is disabled in these examples. Omit `--nocreate_wandb_logger` to use it.
 
 After training, run the DV silent and voiced evaluation commands above before changing imports.
 
@@ -286,7 +286,7 @@ python train_parakeet.py "${VCTK_ARGS[@]}" \
   --output_directory output_parakeet_emg_vctk_8_64_ft
 ```
 
-**Do not run an additional `pretrain_mel_adapter.py` warm-up on EMG-VCTK for this recipe.** It starts from the DV ASR adaptation checkpoint directly. “Full FT” here refers to fine-tuning the stage-1 transduction model. It does not mean unfreezing all 1.1B Parakeet parameters.
+**Do not run an additional `pretrain_mel_adapter.py` fine-tuning on EMG-VCTK for this recipe.** It starts from the DV ASR adaptation checkpoint directly. “Full FT” here refers to fine-tuning the stage-1 transduction model. It does not mean unfreezing all 1.1B Parakeet parameters.
 
 The training sampler uses different length units for the two loaders. `train_parakeet.py` documents `--emg_batch_tokens 8000` as an EMG-VCTK-specific budget, versus the default 256000 appropriate to DV raw-sample lengths. The commands above preserve the supplied recipe. Use the released run configuration for exact batch settings. If changing this budget for memory reasons, record the change.
 
@@ -307,7 +307,7 @@ The training sampler uses different length units for the two loaders. `train_par
 | `read_emg_vctk.py` | EMG-VCTK loader. |
 | `emg_vctk_scan.py`, `emg_vctk_index.py` | Inspect the EMG-VCTK layout and build a local manifest. |
 | `transduction_model.py` | Train/fine-tune stage 1. |
-| `pretrain_mel_adapter.py` | DV mel-adapter warm-up. |
+| `pretrain_mel_adapter.py` | DV mel-spectrogram adapter fine-tuning. |
 | `train_parakeet.py` | ASR adaptation. |
 | `parakeet_mel_asr.py` | Mel interface, Parakeet integration and adapter checkpoint I/O. |
 | `evaluate_asr.py`, `evaluate_asr_voiced.py` | Silent and voiced corpus evaluation. |
